@@ -105,7 +105,7 @@ $user = str_replace($mainDomainSuffix, '', $user);
 ### Patch used as below:
 
 ```
-From: Arnau <arnauvp@e.email>
+From: Ronak patel <ronak.patel.ext@murenaa.io>
 Date: Thu, 04 Feb 2021 11:24:27 +0100
 Subject: [PATCH] auto append domain when user logs in only with his username, except admin user
 
