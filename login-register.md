@@ -199,3 +199,91 @@ diff --git ./core/Controller/LoginController.php ./core/Controller/LoginControll
  			$this->manager->emit('\OC\User', 'preLogin', [$user, $password]);
 	}
 ```
+
+### Second Patch
+
+```
+--- ./core/templates/layout.guest.php	2024-03-15 19:20:21
++++ ./core/templates/layout.guest-new.php	2024-03-15 19:24:49
+@@ -22,6 +22,7 @@
+ 		<link rel="mask-icon" sizes="any" href="<?php print_unescaped(image_path('core', 'favicon-mask.svg')); ?>" color="<?php p($theme->getColorPrimary()); ?>">
+ 		<link rel="manifest" href="<?php print_unescaped(image_path('core', 'manifest.json')); ?>" crossorigin="use-credentials">
+ 		<?php emit_css_loading_tags($_); ?>
++		<?php array_push($_['jsfiles'] , '/themes/eCloud/core/js/custom-login.js') ?>
+ 		<?php emit_script_loading_tags($_); ?>
+ 		<?php print_unescaped($_['headers']); ?>
+ 	</head>
+\ No newline at end of file
+@@ -30,12 +31,37 @@
+ 		<?php foreach ($_['initialStates'] as $app => $initialState) { ?>
+ 			<input type="hidden" id="initial-state-<?php p($app); ?>" value="<?php p(base64_encode($initialState)); ?>">
+ 		<?php }?>
+-		<div class="wrapper">
+-			<div class="v-align">
++		<div class="wrapper <?= (array_key_exists("alt_login",$_)) ? 'alt_login':'not_alt_login' ?>" >
++			<?php if (array_key_exists("alt_login",$_)) { ?>
++				<div class="banner-right-align">
++					<div class="lines">
++					</div>
++					<div class="banner-content">
++						<div class="banner-content-get-free-murena"><p><?php p($l->t('Get your FREE Murena Workspace account now')); ?></p></div>
++						<div class="banner-content-why-murena">
++							<ol>
++								<li><?php p($l->t('1GB storage for FREE to store and sync your pictures & videos.')); ?></li>
++								<li><?php p($l->t('Edit your documents online.')); ?></li>
++								<li><?php p($l->t('Your unique email address @murena.io')); ?></li>
++								<li><?php p($l->t('Sync calendar and contacts with the cloud')); ?></li>
++								<li><?php p($l->t('and many new features added regularly!')); ?></li>
++							</ol>
++						</div>
++						<div  class="banner-content-create-button">
++							<a href="/signup" ><?php p($l->t('Create My Account')); ?></a>
++						</div>
++					</div>
++				</div>
++			<?php } ?>
++			<div class="v-align <?= (!array_key_exists("alt_login",$_)) ? 'warning-messsage':'' ?>">
+ 				<?php if ($_['bodyid'] === 'body-login'): ?>
+ 					<header role="banner">
+ 						<div id="header">
+ 							<div class="logo"></div>
++								<?php if (array_key_exists("alt_login",$_)) { ?>
++									<div class="sign-in-label sign-label"><?php p($l->t('Sign in to your account')); ?></div>
++									<div class="sign-in-label fp-label" style="display: none"><?php p($l->t('Forgot Password')); ?></div>
++								<?php } ?>
+ 						</div>
+ 					</header>
+ 				<?php endif; ?>
+\ No newline at end of file
+@@ -44,13 +70,24 @@
+ 						<?php p($theme->getName()); ?>
+ 					</h1>
+ 					<?php print_unescaped($_['content']); ?>
++					<?php if (array_key_exists("alt_login",$_)) { ?>
++					<div class="have-an-account">
++						<div class="createaccdesk"><?php p($l->t('Don\'t have an account yet?')); ?> <a href="/signup"><?php p($l->t('Create an account')); ?></a></div>
++						<div class="createaccmob"><p><?php p($l->t('Don\'t have an account yet?')); ?></p> <p> <a href="/signup"><?php p($l->t('Create an account')); ?></a></p></div>
++					</div>
++					<?php } ?>
+ 				</main>
++				<footer role="contentinfo" class="<?= (!array_key_exists("alt_login",$_)) ? 'forgotpass-footer':'' ?>">
++					<p class="info">
++						<?php print_unescaped($theme->getLongFooter()); ?>
++					</p>
++				</footer>
+ 			</div>
++			<footer role="contentinfo" class="<?= (!array_key_exists("alt_login",$_)) ? 'forgotpass-footer':'' ?>">
++				<p class="info">
++					<?php print_unescaped($theme->getLongFooter()); ?>
++				</p>
++			</footer>
+ 		</div>
+-		<footer role="contentinfo" class="guest-box">
+-			<p class="info">
+-				<?php print_unescaped($theme->getLongFooter()); ?>
+-			</p>
+-		</footer>
+ 	</body>
+ </html>
+\ No newline at end of file
+```
