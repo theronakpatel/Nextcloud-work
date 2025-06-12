@@ -24,7 +24,20 @@ The app consists of two main parts:
 * Example: `php occ notify:announce --title="Update" --message="System maintenance at midnight."`
 * Handles input validation and dispatches messages to the service
 
-```php
+Implements message filtering, validation, and dispatch based on CLI flags:
+
+* `--cloud-only` or `--mail-only` restrict delivery method
+* `--users`, `--groups` specify recipients
+* `--message-id` identifies the content block to be sent
+
+It triggers appropriate jobs or services:
+
+* Adds email notification job to the job list if not `--cloud-only`
+* Calls `sendNotificationToUsers`, `sendNotificationToGroups`, or `sendNotificationToEveryone` if not `--mail-only`
+
+Includes error handling for email validity, message ID translation validation, and user/group lookup.
+
+```
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		$cloudOnly = $mailOnly = false;
 		if ($input->hasParameterOption(['--cloud-only', '-c'], true)) {
@@ -211,9 +224,15 @@ The app consists of two main parts:
 ### 2. `Service/NotificationService.php`
 
 * Uses Nextcloud’s notification backend API
-* Prepares and sends notification objects to each user
+* Prepares and formats message strings with rich placeholders for bold text, links, and usernames
+* Supports localization using Nextcloud’s l10n system
 
-```php
+Important methods include:
+
+* `getParsedString($message, $username)`: Handles formatting for rich strings
+* `assignVariables()`: Resolves placeholders and formats them for output
+* `getTranslatedSubjectAndMessage()`: Retrieves localized versions of subject and body based on message ID
+```
 	/**
 	 * @param string $message
 	 * @param string $username
@@ -332,3 +351,18 @@ The app consists of two main parts:
 		return ['subject' => $l->t($messageId . '_subject'), 'message' => $l->t($messageId . '_body')];
 	}
 ```
+
+## Sample Use Case
+
+To notify all users of an upcoming update in English and French:
+
+1. Add translations for `update_notice_subject` and `update_notice_body` in both languages
+2. Run the OCC command:
+
+   ```sh
+   php occ notify:announce --message-id="update_notice" --users="all"
+   ```
+## File Locations
+
+* Command Logic: `Command/Announce.php`
+* Notification Preparation: `Service/NotificationService.php`
