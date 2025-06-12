@@ -145,9 +145,9 @@ Now, whenever `setUserValue()` is called in the core `AllConfig` class, a `UserC
 +declare(strict_types=1);
 +
 +/**
-+ * @copyright Copyright (c) 2023 Murena SAS <akhil.potukuchi.ext@murena.com>
++ * @copyright Copyright (c) 2023 Murena SAS <ronak.patel.ext@murena.com>
 + *
-+ * @author Murena SAS <akhil.potukuchi.ext@murena.com>
++ * @author Murena SAS <ronak.patel.ext@murena.com>
 + *
 + * @license GNU AGPL version 3 or any later version
 + *
